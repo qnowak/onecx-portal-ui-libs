@@ -2,7 +2,7 @@ import { createElement, Fragment } from 'react'
 import { TextDecoder, TextEncoder } from 'node:util'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-const appBase = '/ui/admin/onecx-proposal'
+const appBase = '/ui/admin/sample-app'
 const mockLocationListeners: ((location: { url?: string; isFirst: boolean }) => void)[] = []
 const mockPublishedLocations: { url?: string; isFirst: boolean }[] = []
 
