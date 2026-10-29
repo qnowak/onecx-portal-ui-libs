@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { TextDecoder, TextEncoder } from 'node:util'
+import { createElement, Fragment } from 'react'
 import { CurrentLocationTopic, type CurrentLocationTopicPayload } from '@onecx/integration-interface'
 
 const loggerError = jest.fn()
@@ -44,34 +45,29 @@ jest.mock('../utils/logger.utils', () => ({
   createLogger: () => ({ error: loggerError }),
 }))
 
-Object.assign(globalThis, { TextDecoder, TextEncoder })
-
 const RouterContent = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  return (
-    <>
-      <output data-testid="location">
-        {location.pathname}
-        {location.search}
-        {location.hash}
-      </output>
-      <button onClick={() => navigate(`${appBase}/subpage/record-1?tab=details#summary`)}>Navigate in React</button>
-      <Routes>
-        <Route path={appBase} element={<div>Root page</div>} />
-        <Route path={`${appBase}/subpage/:id`} element={<div>Subpage</div>} />
-      </Routes>
-    </>
+  return createElement(
+    Fragment,
+    null,
+    createElement('output', { 'data-testid': 'location' }, location.pathname, location.search, location.hash),
+    createElement(
+      'button',
+      { onClick: () => navigate(`${appBase}/subpage/record-1?tab=details#summary`) },
+      'Navigate in React'
+    ),
+    createElement(
+      Routes,
+      null,
+      createElement(Route, { path: appBase, element: createElement('div', null, 'Root page') }),
+      createElement(Route, { path: `${appBase}/subpage/:id`, element: createElement('div', null, 'Subpage') })
+    )
   )
 }
 
-const renderRouter = () =>
-  render(
-    <SyncedRouterProvider>
-      <RouterContent />
-    </SyncedRouterProvider>
-  )
+const renderRouter = () => render(createElement(SyncedRouterProvider, null, createElement(RouterContent)))
 
 const publishLocation = (payload: CurrentLocationTopicPayload) => {
   act(() => {
